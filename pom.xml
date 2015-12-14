@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>guru.nidi</groupId>
+    <artifactId>executable-test</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>simple</id>
+            <build>
+                <finalName>exec-simple</finalName>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <concat destfile="${basedir}/target/exec-simple.cmd" binary="true">
+                                            <fileset file="${basedir}/header-simple.txt" />
+                                            <fileset file="${basedir}/target/${project.build.finalName}.jar" />
+                                        </concat>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>complete</id>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/jre</directory>
+                    </resource>
+                </resources>
+                <finalName>exec-complete</finalName>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy file="${basedir}/header-complete.txt" todir="${basedir}/target"/>
+                                        <length file="${basedir}/header-complete.txt" property="length"/>
+                                        <replace file="${basedir}/target/header-complete.txt" token="%len" value="${length}"/>
+                                        <concat destfile="${basedir}/target/exec-complete.cmd" binary="true">
+                                            <fileset file="${basedir}/target/header-complete.txt" />
+                                            <fileset file="${basedir}/target/${project.build.finalName}.jar" />
+                                        </concat>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

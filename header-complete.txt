@@ -1,0 +1,22 @@
+:<<"::cmdliteral"
+@echo off
+goto :cmd_part
+::cmdliteral
+if [ ! -d ~/.my-java ] #
+then #
+    mkdir ~/.my-java #
+    unzip $0 jre-mac.zip -d ~/.my-java > /dev/null 2>&1  #
+    unzip ~/.my-java/jre-mac.zip -d ~/.my-java/jre > /dev/null 2>&1 #
+fi #
+~/.my-java/jre/bin/java -jar $0 #
+exit #
+
+:cmd_part
+if not exist %userprofile%\.my-java (
+    mkdir %userprofile%\.my-java
+    powershell.exe -nologo -noprofile -command "& { $stream = [System.IO.File]::OpenRead('%~f0'); $barr = New-Object byte[] 10000; $ostream = [System.IO.File]::OpenWrite('%userprofile%\.my-java\exec.zip'); $stream.Seek(%len, [System.IO.SeekOrigin]::Begin) >$null; while( $bytesRead = $stream.Read($barr,0,10000)){ $ostream.Write($barr,0,$bytesRead); } $ostream.close(); }"
+    powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('%userprofile%\.my-java\exec.zip', '%userprofile%\.my-java'); }"
+    powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('%userprofile%\.my-java\jre-windows.zip', '%userprofile%\.my-java\jre'); }"
+)
+%userprofile%\.my-java\jre\bin\java -jar %~f0
+exit /b
